@@ -1,0 +1,90 @@
+/* Estilo del cuerpo de la página */
+body {
+  font-family: "Courier New", monospace; /* Cambié la fuente a 'Courier New' y añadí 'monospace' como fuente de respaldo */
+  background-color: #222; /* Cambié el color de fondo */
+  color: #fff; /* Color de texto */
+}
+
+/* Estilo del encabezado */
+header {
+  background-color: #333; /* Cambié el color de fondo */
+  color: #fff; /* Color de texto */
+  text-align: center;
+  padding: 20px 0;
+  border-bottom: 2px solid #555;
+}
+
+header h1 {
+    font-size: 48px;
+    font-weight: bold;
+  }
+
+/* Estilo de la barra de navegación */
+nav {
+  background-color: #444; /* Cambié el color de fondo */
+  color: #fff; /* Color de texto */
+  text-align: center;
+  padding: 10px 0;
+  
+}
+
+nav ul {
+  list-style: none;
+}
+
+nav ul li {
+  display: inline;
+  margin-right: 20px;
+}
+
+nav a {
+  text-decoration: none;
+  color: #fff; /* Color de texto */
+  font-weight: bold;
+  font-size: 16px;
+}
+
+
+
+/* Estilo del contenido principal */
+main {
+  max-width: 800px; /* Ancho máximo del contenido */
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #333; /* Cambié el color de fondo */
+  color: #fff; /* Color de texto */
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+main h2 {
+  font-size: 32px;
+  margin-bottom: 20px;
+}
+
+main p {
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+/* Estilo del pie de página */
+footer {
+  text-align: center;
+  padding: 10px 0;
+  background-color: #444; /* Cambié el color de fondo */
+  color: #fff; /* Color de texto */
+  border-top: 2px solid #555;
+}
+
+footer p {
+  font-size: 14px;
+}
+
+/* Estilo de los enlaces */
+a {
+  color: #f90; /* Color de texto */
+}
+
+a:hover {
+  color: #ff0; /* Cambié el color de texto al hacer hover */
+}
