@@ -1,132 +1,130 @@
 <?php
 
-require_once('../app/models/IglesiaDB.php');
-require_once('../app/models/MUsuario.php');
-
+require_once('../app/models/IglesiaDBProxy.php');
 
 class MEvento
 {
-    private IglesiaDB $database;
+    private IglesiaDBProxy $database;
 
     public function __construct()
     {
-        $this->database = new IglesiaDB();
+        $this->database = new IglesiaDBProxy();
     }
 
     public function agregarEvento($nombre, $fecha, $descripcion, $usuario_id): void
-{
-    $bd = $this->database->getConnection();
-    try {
-        $query = "INSERT INTO " . $this->database ::TABLE_EVENTO . " (nombre, fecha, descripcion, usuario_id) VALUES (?, ?, ?, ?)";
-        $stmt = $bd->prepare($query);
-        $stmt->bind_param("sssi", $nombre, $fecha, $descripcion, $usuario_id);
-        if ($stmt->execute()) {
-            error_log("Evento insertado con éxito");
-        }
-    } catch (Exception $e) {
-        error_log("Excepción al insertar el evento en la base de datos: " . $e->getMessage());
-    } finally {
-        if (isset($stmt)) {
-            $stmt->close();
-        }
-        $bd->close();
-    }
-}
-
-public function mostrarEventos(): array
-{
-    $bd = $this->database->getConnection();
-
-    $eventos = [];
-
-    try {
-        $result = $bd->query('SELECT * FROM ' . $this->database::TABLE_EVENTO);
-
-        if ($result) {
-            while ($row = $result->fetch_assoc()) {
-                $evento = new Evento($row['id'], $row['nombre'], $row['fecha'], $row['descripcion'], $row['usuario_id']);
-                $eventos[] = $evento;
+    {
+        $bd = $this->database->getConnection();
+        try {
+            $query = "INSERT INTO " . $this->database->getTableEvento() . " (nombre, fecha, descripcion, usuario_id) VALUES (?, ?, ?, ?)";
+            $stmt = $bd->prepare($query);
+            $stmt->bind_param("sssi", $nombre, $fecha, $descripcion, $usuario_id);
+            if ($stmt->execute()) {
+                error_log("Evento insertado con éxito");
             }
+        } catch (Exception $e) {
+            error_log("Excepción al insertar el evento en la base de datos: " . $e->getMessage());
+        } finally {
+            if (isset($stmt)) {
+                $stmt->close();
+            }
+            $bd->close();
         }
-    } catch (Exception $e) {
-        error_log("Excepción en mostrarEventos: " . $e->getMessage());
-    } finally {
-        $bd->close();
     }
 
-    return $eventos;
-}
+    public function mostrarEventos(): array
+    {
+        $bd = $this->database->getConnection();
 
-public function buscarEvento($id)
-{
-    $bd = $this->database->getConnection();
+        $eventos = [];
 
-    try {
-        $query = "SELECT * FROM " . $this->database::TABLE_EVENTO . " WHERE id = ?";
-        $stmt = $bd->prepare($query);
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        $result = $stmt->get_result();
+        try {
+            $result = $bd->query('SELECT * FROM ' . $this->database->getTableEvento());
 
-        if ($result && $result->num_rows > 0) {
-            $row = $result->fetch_assoc();
-            $evento = new Evento($row['id'], $row['nombre'], $row['fecha'], $row['descripcion'], $row['usuario_id']);
-            return $evento;
+            if ($result) {
+                while ($row = $result->fetch_assoc()) {
+                    $evento = new Evento($row['id'], $row['nombre'], $row['fecha'], $row['descripcion'], $row['usuario_id']);
+                    $eventos[] = $evento;
+                }
+            }
+        } catch (Exception $e) {
+            error_log("Excepción en mostrarEventos: " . $e->getMessage());
+        } finally {
+            $bd->close();
         }
-    } catch (Exception $e) {
-        error_log("Excepción en buscarEvento: " . $e->getMessage());
-    } finally {
-        $bd->close();
+
+        return $eventos;
     }
 
-    return null;
-}
+    public function buscarEvento($id)
+    {
+        $bd = $this->database->getConnection();
 
-public function editarEvento($id, $nombre, $fecha, $descripcion, $usuario_id): void
-{
-    $bd = $this->database->getConnection();
+        try {
+            $query = "SELECT * FROM " . $this->database->getTableEvento() . " WHERE id = ?";
+            $stmt = $bd->prepare($query);
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+            $result = $stmt->get_result();
 
-    try {
-        $query = "UPDATE " . $this->database::TABLE_EVENTO . " SET nombre = ?, fecha = ?, descripcion = ?, usuario_id = ? WHERE id = ?";
-        $stmt = $bd->prepare($query);
-        $stmt->bind_param("sssii", $nombre, $fecha, $descripcion, $usuario_id, $id);
-
-        if ($stmt->execute()) {
-            error_log("Evento editado con éxito");
+            if ($result && $result->num_rows > 0) {
+                $row = $result->fetch_assoc();
+                $evento = new Evento($row['id'], $row['nombre'], $row['fecha'], $row['descripcion'], $row['usuario_id']);
+                return $evento;
+            }
+        } catch (Exception $e) {
+            error_log("Excepción en buscarEvento: " . $e->getMessage());
+        } finally {
+            $bd->close();
         }
-    } catch (Exception $e) {
-        error_log("Excepción al editar el evento: " . $e->getMessage());
-    } finally {
-        if (isset($stmt)) {
-            $stmt->close();
+
+        return null;
+    }
+
+    public function editarEvento($id, $nombre, $fecha, $descripcion, $usuario_id): void
+    {
+        $bd = $this->database->getConnection();
+
+        try {
+            $query = "UPDATE " . $this->database->getTableEvento() . " SET nombre = ?, fecha = ?, descripcion = ?, usuario_id = ? WHERE id = ?";
+            $stmt = $bd->prepare($query);
+            $stmt->bind_param("sssii", $nombre, $fecha, $descripcion, $usuario_id, $id);
+
+            if ($stmt->execute()) {
+                error_log("Evento editado con éxito");
+            }
+        } catch (Exception $e) {
+            error_log("Excepción al editar el evento: " . $e->getMessage());
+        } finally {
+            if (isset($stmt)) {
+                $stmt->close();
+            }
+            $bd->close();
         }
-        $bd->close();
+    }
+
+    public function eliminarEvento($id): void
+    {
+        $bd = $this->database->getConnection();
+
+        try {
+            $query = "DELETE FROM " . $this->database->getTableEvento() . " WHERE id = ?";
+            $stmt = $bd->prepare($query);
+            $stmt->bind_param("i", $id);
+
+            if ($stmt->execute()) {
+                error_log("Evento eliminado con éxito");
+            }
+        } catch (Exception $e) {
+            error_log("Excepción al eliminar el evento: " . $e->getMessage());
+        } finally {
+            if (isset($stmt)) {
+                $stmt->close();
+            }
+            $bd->close();
+        }
     }
 }
 
-public function eliminarEvento($id): void
-{
-    $bd = $this->database->getConnection();
-
-    try {
-        $query = "DELETE FROM " . $this->database::TABLE_EVENTO . " WHERE id = ?";
-        $stmt = $bd->prepare($query);
-        $stmt->bind_param("i", $id);
-
-        if ($stmt->execute()) {
-            error_log("Evento eliminado con éxito");
-        }
-    } catch (Exception $e) {
-        error_log("Excepción al eliminar el evento: " . $e->getMessage());
-    } finally {
-        if (isset($stmt)) {
-            $stmt->close();
-        }
-        $bd->close();
-    }
-}
-
-}
 class Evento {
     private $id;
     private $nombre;
@@ -135,7 +133,6 @@ class Evento {
     private $usuario_id;
 
     public function __construct($id, $nombre, $fecha, $descripcion, $usuario_id) {
-
         $this->id = $id;     
         $this->nombre = $nombre;
         $this->fecha = $fecha;

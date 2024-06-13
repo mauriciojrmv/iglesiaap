@@ -1,34 +1,29 @@
 <?php
 
-require_once('../app/models/IglesiaDB.php');
+require_once('../app/models/IglesiaDBProxy.php');
 
-
-class MTIpoRelacion
+class MTipoRelacion
 {
-    private IglesiaDB $database;
+    private IglesiaDBProxy $database;
 
     public function __construct()
     {
-        $this->database = new IglesiaDB();
+        $this->database = new IglesiaDBProxy();
     }
 
     public function agregarTipo($nombre): void
     {
-
         $bd = $this->database->getConnection();
         try {
-
-            $query = "INSERT INTO " . $this->database::TABLE_TIPO_RELACION . " (nombre) VALUES (?)";
+            $query = "INSERT INTO " . $this->database->getTableTipoRelacion() . " (nombre) VALUES (?)";
             $stmt = $bd->prepare($query);
             $stmt->bind_param("s", $nombre);
             if ($stmt->execute()) {
                 error_log("Tipo de relación insertada con éxito");
             }
         } catch (Exception $e) {
-
             error_log("Excepción al insertar el tipo de relación a la base de datos: " . $e->getMessage());
         } finally {
-
             if (isset($stmt)) {
                 $stmt->close();
             }
@@ -43,7 +38,7 @@ class MTIpoRelacion
         $tiposRelacion = []; // Un arreglo para almacenar objetos TipoRelacion
 
         try {
-            $result = $bd->query('SELECT * FROM ' . $this->database::TABLE_TIPO_RELACION);
+            $result = $bd->query('SELECT * FROM ' . $this->database->getTableTipoRelacion());
 
             if ($result) {
                 while ($row = $result->fetch_assoc()) {
@@ -53,7 +48,7 @@ class MTIpoRelacion
                 }
             }
         } catch (Exception $e) {
-            error_log(" Excepción en getTipoRelacion: " . $e->getMessage());
+            error_log("Excepción en getTipoRelacion: " . $e->getMessage());
         } finally {
             $bd->close();
         }
@@ -66,7 +61,7 @@ class MTIpoRelacion
         $bd = $this->database->getConnection();
 
         try {
-            $query = "SELECT * FROM " . $this->database::TABLE_TIPO_RELACION . " WHERE id = ?";
+            $query = "SELECT * FROM " . $this->database->getTableTipoRelacion() . " WHERE id = ?";
             $stmt = $bd->prepare($query);
             $stmt->bind_param("i", $id);
             $stmt->execute();
@@ -88,14 +83,12 @@ class MTIpoRelacion
         return null;
     }
 
-
     public function editarTipo($id, $nombre): void
     {
         $bd = $this->database->getConnection();
 
-
         try {
-            $query = "UPDATE " . $this->database::TABLE_TIPO_RELACION . " SET nombre = ? WHERE id = ?";
+            $query = "UPDATE " . $this->database->getTableTipoRelacion() . " SET nombre = ? WHERE id = ?";
             $stmt = $bd->prepare($query);
             $stmt->bind_param("si", $nombre, $id);
 
@@ -105,7 +98,6 @@ class MTIpoRelacion
         } catch (Exception $e) {
             error_log("Excepción al editar el tipo de relación: " . $e->getMessage());
         } finally {
-
             if (isset($stmt)) {
                 $stmt->close();
             }
@@ -117,9 +109,8 @@ class MTIpoRelacion
     {
         $bd = $this->database->getConnection();
 
-
         try {
-            $query = "DELETE FROM " . $this->database::TABLE_TIPO_RELACION . " WHERE id = ?";
+            $query = "DELETE FROM " . $this->database->getTableTipoRelacion() . " WHERE id = ?";
             $stmt = $bd->prepare($query);
             $stmt->bind_param("i", $id);
 
@@ -129,7 +120,6 @@ class MTIpoRelacion
         } catch (Exception $e) {
             error_log("Excepción al eliminar el tipo de relación: " . $e->getMessage());
         } finally {
-
             if (isset($stmt)) {
                 $stmt->close();
             }
@@ -137,6 +127,7 @@ class MTIpoRelacion
         }
     }
 }
+
 class TipoRelacion {
     
     private $id;

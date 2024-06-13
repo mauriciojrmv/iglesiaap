@@ -1,23 +1,21 @@
 <?php
 
-require_once('../app/models/IglesiaDB.php');
-
-
+require_once('../app/models/IglesiaDBProxy.php');
 
 class MIngreso
 {
-    private IglesiaDB $database;
+    private IglesiaDBProxy $database;
 
     public function __construct()
     {
-        $this->database = new IglesiaDB();
+        $this->database = new IglesiaDBProxy();
     }
 
     public function agregarIngreso($tipoIngreso, $monto, $evento_id): void
     {
         $bd = $this->database->getConnection();
         try {
-            $query = "INSERT INTO " . $this->database::TABLE_INGRESO . " (tipo_ingreso, monto, evento_id) VALUES (?, ?, ?)";
+            $query = "INSERT INTO " . $this->database->getTableIngreso() . " (tipo_ingreso, monto, evento_id) VALUES (?, ?, ?)";
             $stmt = $bd->prepare($query);
             $stmt->bind_param("sdi", $tipoIngreso, $monto, $evento_id);
             if ($stmt->execute()) {
@@ -40,7 +38,7 @@ class MIngreso
         $ingresos = [];
 
         try {
-            $result = $bd->query('SELECT * FROM ' . $this->database::TABLE_INGRESO);
+            $result = $bd->query('SELECT * FROM ' . $this->database->getTableIngreso());
 
             if ($result) {
                 while ($row = $result->fetch_assoc()) {
@@ -62,7 +60,7 @@ class MIngreso
         $bd = $this->database->getConnection();
 
         try {
-            $query = "SELECT * FROM " . $this->database::TABLE_INGRESO . " WHERE id = ?";
+            $query = "SELECT * FROM " . $this->database->getTableIngreso() . " WHERE id = ?";
             $stmt = $bd->prepare($query);
             $stmt->bind_param("i", $id);
             $stmt->execute();
@@ -87,7 +85,7 @@ class MIngreso
         $bd = $this->database->getConnection();
 
         try {
-            $query = "UPDATE " . $this->database::TABLE_INGRESO . " SET tipo_ingreso = ?, monto = ?, evento_id = ? WHERE id = ?";
+            $query = "UPDATE " . $this->database->getTableIngreso() . " SET tipo_ingreso = ?, monto = ?, evento_id = ? WHERE id = ?";
             $stmt = $bd->prepare($query);
             $stmt->bind_param("sdii", $tipoIngreso, $monto, $evento_id, $id);
 
@@ -109,7 +107,7 @@ class MIngreso
         $bd = $this->database->getConnection();
 
         try {
-            $query = "DELETE FROM " . $this->database::TABLE_INGRESO . " WHERE id = ?";
+            $query = "DELETE FROM " . $this->database->getTableIngreso() . " WHERE id = ?";
             $stmt = $bd->prepare($query);
             $stmt->bind_param("i", $id);
 
@@ -126,6 +124,7 @@ class MIngreso
         }
     }
 }
+
 class Ingreso
 {
     private $id;

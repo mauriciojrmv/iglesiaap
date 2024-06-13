@@ -1,16 +1,14 @@
 <?php
 
-require_once('../app/models/IglesiaDB.php');
-
-
+require_once('../app/models/IglesiaDBProxy.php');
 
 class MRelacion
 {
-    private IglesiaDB $database;
+    private IglesiaDBProxy $database;
 
     public function __construct()
     {
-        $this->database = new IglesiaDB();
+        $this->database = new IglesiaDBProxy();
     }
 
     // Función para agregar una nueva relación
@@ -18,7 +16,7 @@ class MRelacion
     {
         $bd = $this->database->getConnection();
         try {
-            $query = "INSERT INTO " . $this->database::TABLE_RELACION . " (usuario_a, usuario_b, tipo_relacion_a, tipo_relacion_b) VALUES (?, ?, ?, ?)";
+            $query = "INSERT INTO " . $this->database->getTableRelacion() . " (usuario_a, usuario_b, tipo_relacion_a, tipo_relacion_b) VALUES (?, ?, ?, ?)";
             $stmt = $bd->prepare($query);
             $stmt->bind_param("iiii", $usuarioA, $usuarioB, $tipoRelacionA, $tipoRelacionB);
             if ($stmt->execute()) {
@@ -41,7 +39,7 @@ class MRelacion
         $relaciones = [];
 
         try {
-            $result = $bd->query('SELECT * FROM ' . $this->database::TABLE_RELACION);
+            $result = $bd->query('SELECT * FROM ' . $this->database->getTableRelacion());
 
             if ($result) {
                 while ($row = $result->fetch_assoc()) {
@@ -63,7 +61,7 @@ class MRelacion
     {
         $bd = $this->database->getConnection();
         try {
-            $query = "SELECT * FROM " . $this->database::TABLE_RELACION . " WHERE id = ?";
+            $query = "SELECT * FROM " . $this->database->getTableRelacion() . " WHERE id = ?";
             $stmt = $bd->prepare($query);
             $stmt->bind_param("i", $id);
             $stmt->execute();
@@ -71,7 +69,7 @@ class MRelacion
 
             if ($result && $result->num_rows > 0) {
                 $row = $result->fetch_assoc();
-                $relacion = new Relacion($row['id'] ,$row['usuario_a'], $row['usuario_b'], $row['tipo_relacion_a'], $row['tipo_relacion_b']);
+                $relacion = new Relacion($row['id'], $row['usuario_a'], $row['usuario_b'], $row['tipo_relacion_a'], $row['tipo_relacion_b']);
                 return $relacion;
             }
         } catch (Exception $e) {
@@ -88,7 +86,7 @@ class MRelacion
     {
         $bd = $this->database->getConnection();
         try {
-            $query = "UPDATE " . $this->database::TABLE_RELACION . " SET usuario_a = ?, usuario_b = ?, tipo_relacion_a = ?, tipo_relacion_b = ? WHERE id = ?";
+            $query = "UPDATE " . $this->database->getTableRelacion() . " SET usuario_a = ?, usuario_b = ?, tipo_relacion_a = ?, tipo_relacion_b = ? WHERE id = ?";
             $stmt = $bd->prepare($query);
             $stmt->bind_param("iiiii", $usuarioA, $usuarioB, $tipoRelacionA, $tipoRelacionB, $id);
 
@@ -110,7 +108,7 @@ class MRelacion
     {
         $bd = $this->database->getConnection();
         try {
-            $query = "DELETE FROM " . $this->database::TABLE_RELACION . " WHERE id = ?";
+            $query = "DELETE FROM " . $this->database->getTableRelacion() . " WHERE id = ?";
             $stmt = $bd->prepare($query);
             $stmt->bind_param("i", $id);
 
@@ -127,6 +125,7 @@ class MRelacion
         }
     }
 }
+
 class Relacion {
     private $id;
     private $usuarioA;
@@ -142,7 +141,6 @@ class Relacion {
         $this->tipoRelacionB = $tipoRelacionB;
     }
 
-    
     public function getId() {
         return $this->id;
     }

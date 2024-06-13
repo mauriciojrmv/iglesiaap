@@ -1,22 +1,21 @@
 <?php
 
-require_once('../app/models/IglesiaDB.php');
-
+require_once('../app/models/IglesiaDBProxy.php');
 
 class MUsuario
 {
-    private IglesiaDB $database;
+    private IglesiaDBProxy $database;
 
     public function __construct()
     {
-        $this->database = new IglesiaDB();
+        $this->database = new IglesiaDBProxy();
     }
 
     public function agregarUsuario($nombre, $apellido, $email, $ci, $cargo_id): void
     {
         $bd = $this->database->getConnection();
         try {
-            $query = "INSERT INTO " . $this->database::TABLE_USUARIO . " (nombre, apellido, email, ci, cargo_id) VALUES (?, ?, ?, ?, ?)";
+            $query = "INSERT INTO " . $this->database->getTableUsuario() . " (nombre, apellido, email, ci, cargo_id) VALUES (?, ?, ?, ?, ?)";
             $stmt = $bd->prepare($query);
             $stmt->bind_param("ssssi", $nombre, $apellido, $email, $ci, $cargo_id);
             if ($stmt->execute()) {
@@ -39,7 +38,7 @@ class MUsuario
         $usuarios = [];
 
         try {
-            $result = $bd->query('SELECT * FROM ' . $this->database::TABLE_USUARIO);
+            $result = $bd->query('SELECT * FROM ' . $this->database->getTableUsuario());
 
             if ($result) {
                 while ($row = $result->fetch_assoc()) {
@@ -61,7 +60,7 @@ class MUsuario
         $bd = $this->database->getConnection();
 
         try {
-            $query = "SELECT * FROM " . $this->database::TABLE_USUARIO . " WHERE id = ?";
+            $query = "SELECT * FROM " . $this->database->getTableUsuario() . " WHERE id = ?";
             $stmt = $bd->prepare($query);
             $stmt->bind_param("i", $id);
             $stmt->execute();
@@ -86,7 +85,7 @@ class MUsuario
         $bd = $this->database->getConnection();
 
         try {
-            $query = "UPDATE " . $this->database::TABLE_USUARIO . " SET nombre = ?, apellido = ?, email = ?, ci = ?, cargo_id = ? WHERE id = ?";
+            $query = "UPDATE " . $this->database->getTableUsuario() . " SET nombre = ?, apellido = ?, email = ?, ci = ?, cargo_id = ? WHERE id = ?";
             $stmt = $bd->prepare($query);
             $stmt->bind_param("ssssii", $nombre, $apellido, $email, $ci, $cargo_id, $id);
 
@@ -108,7 +107,7 @@ class MUsuario
         $bd = $this->database->getConnection();
 
         try {
-            $query = "DELETE FROM " . $this->database::TABLE_USUARIO . " WHERE id = ?";
+            $query = "DELETE FROM " . $this->database->getTableUsuario() . " WHERE id = ?";
             $stmt = $bd->prepare($query);
             $stmt->bind_param("i", $id);
 
@@ -125,6 +124,7 @@ class MUsuario
         }
     }
 }
+
 class Usuario
 {
     private $id;
